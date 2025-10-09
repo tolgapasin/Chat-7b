@@ -5,7 +5,6 @@ from langchain_core.prompts import PromptTemplate
 from os import getenv
 from torch import float16
 
-
 class ChatModel:
     def __init__(self):
         self.chain = None
@@ -56,11 +55,4 @@ class ChatModel:
     def query_model(self, query: str):
         if not query:
             return
-        print(self.chain.invoke(query))
-
-
-model = ChatModel()
-while True:
-    print("\nHow can I assist you?")
-    question = input()
-    model.query_model(question)
+        return self.chain.invoke(query)
