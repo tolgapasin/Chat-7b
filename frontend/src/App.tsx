@@ -4,7 +4,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import type { SocketMessage } from "./models/SocketMessage.model";
 
 function App() {
-  const [messages, setMessages] = useState<SocketMessage[]>([]);
+  const [messages, setMessages] = useState<String[]>([]);
   const [ws, setWs] = useState(null);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,9 +18,9 @@ function App() {
     };
 
     websocket.onmessage = (evt) => {
-      const message = evt.data as SocketMessage;
-      setMessages((prevMessages) => [...prevMessages, message]);
-      console.log(message.payload);
+      const message: SocketMessage = JSON.parse(evt.data);
+      console.log(evt.data);
+      setMessages((prevMessages) => [...prevMessages, message.payload]);
     };
 
     websocket.onclose = () => {
