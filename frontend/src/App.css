@@ -5,38 +5,47 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .card {
   padding: 2em;
 }
 
-.read-the-docs {
-  color: #888;
+.chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  height: 50vh;
+  overflow-y: auto;
+}
+
+.chat-item {
+  display: flex;
+  width: 100%;
+}
+
+.chat-item p {
+  max-width: 60%;
+  margin: 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 1rem;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.chat-item.received {
+  justify-content: flex-start;
+}
+
+.chat-item.sent {
+  justify-content: flex-end;
+}
+
+.chat-item.received p {
+  background-color: #7c7b7b;
+  border-bottom-left-radius: 0.2rem;
+}
+
+.chat-item.sent p {
+  background-color: #555353;
+  border-bottom-right-radius: 0.2rem;
 }

@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import LoadingSpinner from "./components/LoadingSpinner";
-import type { SocketMessage } from "./models/SocketMessage.model";
+import { SocketMessage } from "./models/SocketMessage.model";
+import { ChatItem } from "./models/ChatItem.model";
+import { ChatItemType } from "./models/ChatItemType.enum";
 
 function App() {
-  const [messages, setMessages] = useState<String[]>([]);
-  const [ws, setWs] = useState(null);
-  const [message, setMessage] = useState("");
+  const [chatLog, setChatLog] = useState<ChatItem[]>([]);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const chatLogRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom whenever chatLog changes
+  useEffect(() => {
+    if (chatLogRef.current) {
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+    }
+  }, [chatLog]);
 
   useEffect(() => {
     const websocket = new WebSocket("ws://127.0.0.1:8000/chat-socket");
@@ -18,9 +28,22 @@ function App() {
     };
 
     websocket.onmessage = (evt) => {
-      const message: SocketMessage = JSON.parse(evt.data);
-      console.log(evt.data);
-      setMessages((prevMessages) => [...prevMessages, message.payload]);
+      // TODO: for some reason, very long responses come through just as string, not a SocketMessage object
+      // look into why this is happening and then get rid of this try/catch
+      let text: string;
+      try {
+        const message: SocketMessage = JSON.parse(evt.data);
+        text = message.payload;
+      } catch {
+        text = evt.data;
+      }
+
+      const chatItem = new ChatItem({
+        type: ChatItemType.Received,
+        text: text,
+      });
+
+      setChatLog((existingChat) => [...existingChat, chatItem]);
     };
 
     websocket.onclose = () => {
@@ -36,28 +59,44 @@ function App() {
 
   const sendMessage = () => {
     if (ws) {
-      ws.send(
-        JSON.stringify({
-          type: "message",
-          payload: message,
-        })
-      );
+      const message = new SocketMessage({
+        type: "message",
+        payload: currentMessage,
+      });
+      ws.send(JSON.stringify(message));
+
       setIsLoading(true);
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setMessage("");
+
+      const chatItem = new ChatItem({
+        type: ChatItemType.Sent,
+        text: message.payload,
+      });
+      setChatLog((existingChat) => [...existingChat, chatItem]);
+      setCurrentMessage("");
     }
   };
 
   const handleInputChange = (event: any) => {
-    setMessage(event.target.value);
+    setCurrentMessage(event.target.value);
   };
 
   return (
     <>
       <h1>Chat 7b</h1>
-      {messages.map((message, index) => (
-        <p key={index}>{message}</p>
-      ))}
+      <div ref={chatLogRef} className="chat-log">
+        {chatLog.map((chatItem, index) => (
+          <span
+            key={index}
+            className={
+              chatItem.type === ChatItemType.Sent
+                ? "chat-item sent"
+                : "chat-item received"
+            }
+          >
+            <p>{chatItem.text}</p>
+          </span>
+        ))}
+      </div>
       {/* TODO: fix this */}
       <LoadingSpinner isLoading={isLoading} />
       <div className="card">
@@ -65,9 +104,7 @@ function App() {
         <input
           type="text"
           placeholder="Ask away"
-          // onFocus="this.placeholder"
-          // onBlur="this.placeholder='Ask away'"
-          value={message}
+          value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={(e) => {
             if (e.key === "Enter") sendMessage();
