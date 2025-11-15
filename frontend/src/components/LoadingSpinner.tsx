@@ -1,6 +1,8 @@
+import "./LoadingSpinner.css";
+
 const LoadingSpinner = ({ isLoading }: { isLoading: boolean }) => {
   if (isLoading) {
-    <div>LoadingSpinner</div>;
+    return <div className="spinner"></div>;
   }
 
   return null;

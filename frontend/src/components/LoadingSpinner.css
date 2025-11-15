@@ -1,0 +1,14 @@
+.spinner {
+  align-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 8px solid;
+  border-right-color: #555353;
+  animation: s2 1s infinite linear;
+}
+@keyframes s2 {
+  to {
+    transform: rotate(1turn);
+  }
+}

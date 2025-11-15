@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import upArrowIcon from "./assets/up-arrow.svg";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { SocketMessage } from "./models/SocketMessage.model";
 import { ChatItem } from "./models/ChatItem.model";
 import { ChatItemType } from "./models/ChatItemType.enum";
 
 function App() {
+  const webSocketUrl = import.meta.env.VITE_WEBSOCKET_URL;
   const [chatLog, setChatLog] = useState<ChatItem[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -14,13 +16,14 @@ function App() {
 
   // Scroll to bottom whenever chatLog changes
   useEffect(() => {
+    // TODO: move to top of last message, not bottom of chat log
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [chatLog]);
 
   useEffect(() => {
-    const websocket = new WebSocket("ws://127.0.0.1:8000/chat-socket");
+    const websocket = new WebSocket(webSocketUrl);
 
     // TODO: show on screen connection is successful and if it cuts out
     websocket.onopen = () => {
@@ -44,6 +47,7 @@ function App() {
       });
 
       setChatLog((existingChat) => [...existingChat, chatItem]);
+      setIsLoading(false);
     };
 
     websocket.onclose = () => {
@@ -58,6 +62,8 @@ function App() {
   }, []);
 
   const sendMessage = () => {
+    if (!currentMessage) return;
+
     if (ws) {
       const message = new SocketMessage({
         type: "message",
@@ -96,12 +102,13 @@ function App() {
             <p>{chatItem.text}</p>
           </span>
         ))}
+        <LoadingSpinner isLoading={isLoading} />
       </div>
-      {/* TODO: fix this */}
-      <LoadingSpinner isLoading={isLoading} />
-      <div className="card">
-        <p>How can I be of assistance?</p>
+
+      <div className="input-area">
+        <p className="input-label">How can I be of assistance?</p>
         <input
+          className="message-input"
           type="text"
           placeholder="Ask away"
           value={currentMessage}
@@ -110,7 +117,9 @@ function App() {
             if (e.key === "Enter") sendMessage();
           }}
         ></input>
-        <button onClick={sendMessage}>↑</button>
+        <button className="submit-button" onClick={sendMessage}>
+          <img src={upArrowIcon} alt="Up arrow icon" />
+        </button>
       </div>
     </>
   );
