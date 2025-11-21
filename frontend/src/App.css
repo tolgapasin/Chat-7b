@@ -1,0 +1,70 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.input-area {
+  padding: 2em;
+}
+
+/* TODO: find out why not applying */
+.input-area.input-label {
+  font-weight: 500;
+  text-align: left;
+}
+
+.input-area input {
+  height: 1rem;
+  padding: 1rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.input-area input:focus {
+  outline: none;
+}
+
+.chat-log {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  height: 50vh;
+  overflow-y: auto;
+}
+
+.chat-item {
+  display: flex;
+  width: 100%;
+}
+
+.chat-item p {
+  max-width: 60%;
+  margin: 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 1rem;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.chat-item.received {
+  justify-content: flex-start;
+}
+
+.chat-item.sent {
+  justify-content: flex-end;
+}
+
+.chat-item.received p {
+  background-color: #7c7b7b;
+  border-bottom-left-radius: 0.2rem;
+}
+
+.chat-item.sent p {
+  background-color: #555353;
+  border-bottom-right-radius: 0.2rem;
+}
