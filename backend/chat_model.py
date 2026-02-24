@@ -4,6 +4,7 @@ from langchain_huggingface.llms import HuggingFacePipeline
 from langchain_core.prompts import PromptTemplate
 from os import getenv
 from torch import float16
+import torch
 
 class ChatModel:
     def __init__(self):
@@ -24,6 +25,15 @@ class ChatModel:
 
         load_dotenv()
         local_model_path = getenv("LOCAL_MODEL_PATH")
+
+        # Check GPU availability before loading model
+        print("\n" + "="*50)
+        if torch.cuda.is_available():
+            print(f"  GPU is available")
+            print(f"  GPU Device: {torch.cuda.get_device_name(0)}")
+        else:
+            print(f"  GPU is NOT available - model will run on CPU")
+        print("="*50 + "\n")
 
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
