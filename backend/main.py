@@ -9,5 +9,6 @@ async def chat_socket(websocket: WebSocket):
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
-        response = chat_model.query_model(data)
-        await websocket.send_text(f"{response}")
+        for chunk in chat_model.query_model(data):
+            await websocket.send_text(chunk)
+        await websocket.send_text("[END_OF_STREAM]")

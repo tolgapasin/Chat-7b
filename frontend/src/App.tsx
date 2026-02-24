@@ -31,23 +31,32 @@ function App() {
     };
 
     websocket.onmessage = (evt) => {
-      // TODO: for some reason, very long responses come through just as string, not a SocketMessage object
-      // look into why this is happening and then get rid of this try/catch
-      let text: string;
-      try {
-        const message: SocketMessage = JSON.parse(evt.data);
-        text = message.payload;
-      } catch {
-        text = evt.data;
+      if (evt.data === "[END_OF_STREAM]") {
+        setIsLoading(false);
+        return;
       }
 
-      const chatItem = new ChatItem({
-        type: ChatItemType.Received,
-        text: text,
-      });
+      setChatLog((existingChat) => {
+        const lastMessage = existingChat[existingChat.length - 1];
+        if (lastMessage && lastMessage.type === ChatItemType.Received) {
+          // TODO: find a way to append chunk without having to create new chatItem
+          // lastMessage.text += evt.data;
+          // return [...existingChat];
 
-      setChatLog((existingChat) => [...existingChat, chatItem]);
-      setIsLoading(false);
+          const updatedChat = [...existingChat];
+          updatedChat[updatedChat.length - 1] = new ChatItem({
+            type: lastMessage.type,
+            text: lastMessage.text + evt.data,
+          });
+          return updatedChat;
+        } else {
+          const chatItem = new ChatItem({
+            type: ChatItemType.Received,
+            text: evt.data,
+          });
+          return [...existingChat, chatItem];
+        }
+      });
     };
 
     websocket.onclose = () => {
