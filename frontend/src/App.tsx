@@ -116,19 +116,21 @@ function App() {
 
       <div className="input-area">
         <p className="input-label">How can I be of assistance?</p>
-        <input
-          className="message-input"
-          type="text"
-          placeholder="Ask away"
-          value={currentMessage}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
-          }}
-        ></input>
-        <button className="submit-button" onClick={sendMessage}>
-          <img src={upArrowIcon} alt="Up arrow icon" />
-        </button>
+        <div className="input-wrapper">
+          <input
+            className="message-input"
+            type="text"
+            placeholder="Ask away"
+            value={currentMessage}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage();
+            }}
+          ></input>
+          <button className="submit-button" onClick={sendMessage}>
+            <img src={upArrowIcon} alt="Up arrow icon" />
+          </button>
+        </div>
       </div>
     </>
   );
