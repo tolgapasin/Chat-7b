@@ -1,12 +1,15 @@
 from fastapi import FastAPI, WebSocket
-from chat_model import ChatModel
+from model_loader import load_model
+from chat_session import ChatSession
 
-chat_model = ChatModel()
 app = FastAPI()
+llm = load_model()
 
 @app.websocket("/chat-socket")
 async def chat_socket(websocket: WebSocket):
     await websocket.accept()
+    chat_model = ChatSession(llm)
+    
     while True:
         data = await websocket.receive_text()
         for chunk in chat_model.query_model(data):
