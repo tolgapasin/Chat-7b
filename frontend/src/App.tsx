@@ -39,10 +39,6 @@ function App() {
       setChatLog((existingChat) => {
         const lastMessage = existingChat[existingChat.length - 1];
         if (lastMessage && lastMessage.type === ChatItemType.Received) {
-          // TODO: find a way to append chunk without having to create new chatItem
-          // lastMessage.text += evt.data;
-          // return [...existingChat];
-
           const updatedChat = [...existingChat];
           updatedChat[updatedChat.length - 1] = new ChatItem({
             type: lastMessage.type,

@@ -1,7 +1,10 @@
-from typing import Iterator
+from typing import Final, AsyncIterator
 from langchain_huggingface.llms import HuggingFacePipeline
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableSequence
+
+CHAT_HISTORY_LIMIT = 20
+CHAT_HISTORY_LIMIT_REACHED_MESSAGE: Final = "You have reached the maximum number of messages available."
 
 class ChatSession:
     def __init__(self, llm: HuggingFacePipeline):
@@ -26,7 +29,11 @@ class ChatSession:
 
         return prompt | llm.bind(stop=["<|user|>", "</s>"])
 
-    def query_model(self, query: str) -> Iterator[str]:
+    async def query_model(self, query: str) -> AsyncIterator[str]:
+        if (self.history and len(self.history) >= CHAT_HISTORY_LIMIT):
+            yield CHAT_HISTORY_LIMIT_REACHED_MESSAGE
+            return
+        
         if not query:
             return
 
@@ -34,10 +41,10 @@ class ChatSession:
             [f"<|user|>\n{q}\n<|assistant|>\n{a}" for q, a in self.history]
         )
 
-        response_generator = self.chain.stream({"question": query, "history": history_string})
+        response_stream = self.chain.astream({"question": query, "history": history_string})
 
         full_response = []
-        for chunk in response_generator:
+        async for chunk in response_stream:
             full_response.append(chunk)
             yield chunk
 
