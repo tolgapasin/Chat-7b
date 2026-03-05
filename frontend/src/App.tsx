@@ -31,23 +31,29 @@ function App() {
     };
 
     websocket.onmessage = (evt) => {
-      // TODO: for some reason, very long responses come through just as string, not a SocketMessage object
-      // look into why this is happening and then get rid of this try/catch
-      let text: string;
-      try {
-        const message: SocketMessage = JSON.parse(evt.data);
-        text = message.payload;
-      } catch {
-        text = evt.data;
+      if (evt.data === "[END_OF_STREAM]") {
+        setIsLoading(false);
+        return;
       }
 
-      const chatItem = new ChatItem({
-        type: ChatItemType.Received,
-        text: text,
+      // TODO: add message length limit 4000
+      setChatLog((existingChat) => {
+        const lastMessage = existingChat[existingChat.length - 1];
+        if (lastMessage && lastMessage.type === ChatItemType.Received) {
+          const updatedChat = [...existingChat];
+          updatedChat[updatedChat.length - 1] = new ChatItem({
+            type: lastMessage.type,
+            text: lastMessage.text + evt.data,
+          });
+          return updatedChat;
+        } else {
+          const chatItem = new ChatItem({
+            type: ChatItemType.Received,
+            text: evt.data,
+          });
+          return [...existingChat, chatItem];
+        }
       });
-
-      setChatLog((existingChat) => [...existingChat, chatItem]);
-      setIsLoading(false);
     };
 
     websocket.onclose = () => {
@@ -102,24 +108,27 @@ function App() {
             <p>{chatItem.text}</p>
           </span>
         ))}
+        {/* TODO fix loading spinner issues */}
         <LoadingSpinner isLoading={isLoading} />
       </div>
 
       <div className="input-area">
         <p className="input-label">How can I be of assistance?</p>
-        <input
-          className="message-input"
-          type="text"
-          placeholder="Ask away"
-          value={currentMessage}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
-          }}
-        ></input>
-        <button className="submit-button" onClick={sendMessage}>
-          <img src={upArrowIcon} alt="Up arrow icon" />
-        </button>
+        <div className="input-wrapper">
+          <input
+            className="message-input"
+            type="text"
+            placeholder="Ask away"
+            value={currentMessage}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage();
+            }}
+          ></input>
+          <button className="submit-button" onClick={sendMessage}>
+            <img src={upArrowIcon} alt="Up arrow icon" />
+          </button>
+        </div>
       </div>
     </>
   );
