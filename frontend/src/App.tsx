@@ -108,6 +108,7 @@ function App() {
             <p>{chatItem.text}</p>
           </span>
         ))}
+        {/* TODO fix loading spinner issues */}
         <LoadingSpinner isLoading={isLoading} />
       </div>
 

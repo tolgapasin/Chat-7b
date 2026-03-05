@@ -32,6 +32,7 @@ def load_model() -> HuggingFacePipeline:
     )
     tokenizer = AutoTokenizer.from_pretrained(local_model_path)
 
+    # TODO: add configurable max new tokens
     pipe = pipeline(
         task="text-generation",
         model=model,
