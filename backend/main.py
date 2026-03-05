@@ -14,6 +14,10 @@ async def chat_socket(websocket: WebSocket):
 
     while True:
         data = await websocket.receive_text()
+        if not data:
+            continue
+        
         async for chunk in chat_session.query_model(data):
             await websocket.send_text(chunk)
+            
         await websocket.send_text(END_OF_STREAM_TOKEN)

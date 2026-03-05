@@ -36,6 +36,7 @@ function App() {
         return;
       }
 
+      // TODO: add message length limit 4000
       setChatLog((existingChat) => {
         const lastMessage = existingChat[existingChat.length - 1];
         if (lastMessage && lastMessage.type === ChatItemType.Received) {
