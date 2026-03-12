@@ -1,6 +1,6 @@
 Install python 3.13
 Install torch separately to the rest of the packages to use cuda
-py -3.13 -m pip install torch --index-url https://download.pytorch.org/whl/cu118
+py -3.13 -m pip install torch --index-url https://download.pytorch.org/whl/cu128
 
 Install rest of packages
 py -3.13 -m pip install -r requirements.txt
