@@ -63,6 +63,12 @@
   overflow-y: auto;
 }
 
+.loading-spinner-container {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+}
+
 .chat-item {
   display: flex;
   width: 100%;

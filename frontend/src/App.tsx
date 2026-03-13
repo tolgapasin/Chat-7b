@@ -109,7 +109,11 @@ function App() {
           </span>
         ))}
         {/* TODO fix loading spinner issues */}
-        <LoadingSpinner isLoading={isLoading} />
+        {isLoading && (
+          <div className="loading-spinner-container">
+            <LoadingSpinner />
+          </div>
+        )}
       </div>
 
       <div className="input-area">
