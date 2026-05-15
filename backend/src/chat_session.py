@@ -2,7 +2,7 @@ from typing import Final, AsyncIterator
 from langchain_huggingface.llms import HuggingFacePipeline
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableSequence
-from input_sanitizer import sanitize_input
+from peroxide import sanitise_llm_input
 
 CHAT_HISTORY_LIMIT = 20
 CHAT_HISTORY_LIMIT_REACHED_MESSAGE: Final = "You have reached the maximum number of messages available."
@@ -38,7 +38,7 @@ class ChatSession:
         if not query:
             return
 
-        sanitized_query = sanitize_input(query)
+        sanitized_query = sanitise_llm_input(query)
 
         if not sanitized_query:
             return
